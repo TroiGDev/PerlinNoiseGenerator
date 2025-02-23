@@ -23,6 +23,8 @@ def normalizeVector(v):
 def dotProduct(v1, v2):
     return v1[0] * v2[0] + v1[1] * v2[1]
 
+#----------------------------------------------------------------------INTERPOLATION METHODS
+
 #linear interpolation
 def Interpolate(p1, p2, t):
     return (1-t)*p1 + (t)*p2
@@ -44,33 +46,38 @@ def fadeInterpolate(d1, d2, d3, d4, tx, ty):
     p2p3 = Interpolate(d3, d4, ft)
     return Interpolate(p0p1, p2p3, fb)
 
-#generate perlin noise
-def perlin(cWidth, cHeight, pWidth, pHeight):
-    #ensure viable inputs
-    if cWidth % pWidth != 0 or cHeight % pHeight != 0:
-        print("Cannot create child and parent grid from non devisible dimensions")
-        return False
+def smoothstep(t):
+    return t * t * (3 - 2 * t)
+
+def smoothStepBiInterpolate(q11, q12, q21, q22, x, y):
+    # Horizontal interpolation
+    r1 = q11 * (1 - smoothstep(x)) + q21 * smoothstep(x)
+    r2 = q12 * (1 - smoothstep(x)) + q22 * smoothstep(x)
     
+    # Vertical interpolation
+    return r1 * (1 - smoothstep(y)) + r2 * smoothstep(y)
+
+#----------------------------------------------------------------------
+
+#generate perlin noise
+def perlin(cWidth, cHeight, frequency, amplitude, interpolationMethod):
     #get some usefull variables
-    cellSizeX = cWidth / pWidth
-    cellSizeY = cHeight / pHeight
+    cellSizeX = int(round(cWidth / frequency))
+    cellSizeY = int(round(cHeight / frequency))
 
     #create 2d child grid
     cGrid = [[0 for _ in range(cWidth)] for _ in range(cHeight)]
 
     #create 2d parent grid
-    pGrid = [[GetRandomVectorRotation() for _ in range(pWidth + 1)] for _ in range(pHeight + 1)]
-
-    #initialize return 2d array
-    rGrid = [[0 for _ in range(cWidth)] for _ in range(cHeight)]
+    pGrid = [[GetRandomVectorRotation() for _ in range(frequency + 1)] for _ in range(frequency + 1)]
 
     #for every pixel in child
     for x in range(cWidth):
         for y in range(cHeight):
 
             #get gradient vectors
-            px = math.trunc(x / pWidth)
-            py = math.trunc(y / pHeight)
+            px = math.trunc(x / (cWidth/frequency))
+            py = math.trunc(y / (cHeight/frequency))
 
             g1 = pGrid[px][py]              #top left
             g2 = pGrid[px + 1][py]          #top right
@@ -93,9 +100,15 @@ def perlin(cWidth, cHeight, pWidth, pHeight):
             tx = (x - (px * cellSizeX)) / cellSizeX
             ty = (y - (py * cellSizeY)) / cellSizeY
 
-            #interpolate, using bilinnear or fade interpolation
-            """intensity = BiInterpolate(d1, d2, d3, d4, tx, ty)"""
-            intensity = fadeInterpolate(d1, d2, d3, d4, tx, ty)
+            #interpolate, using bilinnear, fade or smoothstep bilinear interpolation
+            if interpolationMethod == "smoothstep":
+                intensity = smoothStepBiInterpolate(d1, d2, d3, d4, tx, ty)
+            elif interpolationMethod == "bilinear":
+                intensity = BiInterpolate(d1, d2, d3, d4, tx, ty)
+            elif interpolationMethod == "fade":
+                intensity = fadeInterpolate(d1, d2, d3, d4, tx, ty)
+            else:
+                print("No such interpolation method exists!")
 
             #apply final intensity to return array
             cGrid[x][y] = intensity
@@ -118,12 +131,34 @@ def perlin(cWidth, cHeight, pWidth, pHeight):
     #update max value to get range ratio comparison
     max += min * -1
 
-    #go trhough grid again and normalize
+    #go trhough grid again and normalize, then multiply by amplitude
     for x in range(cWidth):
         for y in range(cHeight):
-            cGrid[x][y] = cGrid[x][y] / max
+            cGrid[x][y] = (cGrid[x][y] / max) * amplitude
 
     #return final array
+    return cGrid
+
+#generate fractal stacked perlin
+def fractalStackedPerlin(cWidth, cHeight, params):
+    #generate perlin by parameters
+    noises = []
+    for i in range(len(params)):
+        noises.append(perlin(cWidth, cHeight, params[i][0], params[i][1], params[i][2]))    #params[i] = parameter tuple (freq, amp, interp)
+
+    #create 2d child grid
+    cGrid = [[0 for _ in range(cWidth)] for _ in range(cHeight)]
+
+    #apply avarage intensity
+    for x in range(cWidth):
+        for y in range(cHeight):
+            for noise in noises:
+                cGrid[x][y] += noise[x][y]       #for every pixel, for every noise, add noise to child grid
+            
+            #divide for correct avarage
+            cGrid[x][y] = cGrid[x][y] / len(noises)
+
+    #return final grid
     return cGrid
 
 """
