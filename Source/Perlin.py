@@ -183,3 +183,26 @@ def fractalStackedPerlin(cWidth, cHeight, params, amplitude):
 
     #return final grid
     return cGrid
+
+def stackPerlinNoises(noises):
+    #create 2d child grid
+    cWidth = len(noises[0])
+    cHeight = len(noises[0][0])
+    cGrid = [[0 for _ in range(cWidth)] for _ in range(cHeight)]
+
+    #apply avarage intensity
+    for x in range(cWidth):
+        for y in range(cHeight):
+            for noise in noises:
+
+                #check for same dimensions
+                if len(noise) != cWidth or len(noise[0]) != cHeight:
+                    print("Cannot stack perlin noise of different dimensions!")
+                    return noises[0]
+                
+                cGrid[x][y] += noise[x][y]       #for every pixel, for every noise, add noise to child grid
+            
+            #divide for correct avarage
+            cGrid[x][y] = cGrid[x][y] / len(noises)
+    
+    return cGrid
