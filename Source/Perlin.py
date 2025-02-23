@@ -140,7 +140,7 @@ def perlin(cWidth, cHeight, frequency, amplitude, interpolationMethod):
     return cGrid
 
 #generate fractal stacked perlin
-def fractalStackedPerlin(cWidth, cHeight, params):
+def fractalStackedPerlin(cWidth, cHeight, params, amplitude):
     #generate perlin by parameters
     noises = []
     for i in range(len(params)):
@@ -158,12 +158,28 @@ def fractalStackedPerlin(cWidth, cHeight, params):
             #divide for correct avarage
             cGrid[x][y] = cGrid[x][y] / len(noises)
 
+    #normalize grid and multiply by final amplitude
+    min = 0
+    max = 0
+    for x in range(cWidth):
+        for y in range(cHeight):
+            if cGrid[x][y] > max:
+                max = cGrid[x][y]
+            if cGrid[x][y] < min:
+                min = cGrid[x][y]
+
+    #add min*-1 to all cells to get positive
+    for x in range(cWidth):
+        for y in range(cHeight):
+            cGrid[x][y] += min * -1
+    
+    #update max value to get range ratio comparison
+    max += min * -1
+
+    #go trhough grid again and normalize, then multiply by amplitude
+    for x in range(cWidth):
+        for y in range(cHeight):
+            cGrid[x][y] = (cGrid[x][y] / max) * amplitude
+
     #return final grid
     return cGrid
-
-"""
-USE EXAMPLE:
-testPerlinGrid = perlin(120, 120, 20, 20)
-  - first and second parameter are dimensions of final array matrix
-  - third and fourth are how corse the perlin noise is
-"""
