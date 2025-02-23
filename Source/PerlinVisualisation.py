@@ -27,10 +27,10 @@ def drawWorld(world):
             else:
                 pygame.draw.rect(screen, (0, 0, 0), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))
 
-            """#using 3 layer threshold
-            if world[x][y] > 0.66:
+            #using 3 layer threshold
+            """if world[x][y] > 0.50:
                 pygame.draw.rect(screen, (255, 255, 255), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))
-            elif world[x][y] > 0.33 and world[x][y] < 0.66:
+            elif world[x][y] > 0.25 and world[x][y] < 0.50:
                 pygame.draw.rect(screen, (177, 177, 177), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))
             else:
                 pygame.draw.rect(screen, (0, 0, 0), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))"""
@@ -39,7 +39,16 @@ def drawWorld(world):
             """pygame.draw.rect(screen, (world[x][y] * 255, world[x][y] * 255, world[x][y] * 255), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))"""
 
 #generate perlin grid
-world = Perlin.perlin(wolrdWidth, worldHeight, 10, 10)
+"""world = Perlin.perlin(wolrdWidth, worldHeight, 20, 1, "fade")"""
+
+#generate fractal perlin grid
+params = [
+    (20, 0.4, "fade"),
+    (10, 0.7, "fade"),
+    (5, 1, "fade")
+]
+world = Perlin.fractalStackedPerlin(wolrdWidth, worldHeight, params)
+
 threshold = 0
 
 running = True
