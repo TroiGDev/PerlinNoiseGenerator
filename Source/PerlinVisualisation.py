@@ -1,12 +1,12 @@
 import pygame
 import Perlin
 
-wolrdWidth = 100
+worldWidth = 100
 worldHeight = 100
 drawnCellSize = 5
 
 pygame.init()
-screenWidth = wolrdWidth * drawnCellSize
+screenWidth = worldWidth * drawnCellSize
 screenHeight = worldHeight * drawnCellSize
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption('PerlinVisualisation')
@@ -18,7 +18,7 @@ pygame.display.set_icon(transparent_surface)
 
 def drawWorld(world):
     #draw squares where there is a 1 in the world array
-    for x in range(wolrdWidth):
+    for x in range(worldWidth):
         for y in range(worldHeight):
             
             #using 2 layer threshold
@@ -39,15 +39,21 @@ def drawWorld(world):
             pygame.draw.rect(screen, (world[x][y] * 255, world[x][y] * 255, world[x][y] * 255), (x * drawnCellSize, y * drawnCellSize, drawnCellSize, drawnCellSize))
 
 #generate perlin grid
-"""world = Perlin.perlin(wolrdWidth, worldHeight, 20, 1, "fade")"""
+world = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
 
 #generate fractal perlin grid
-params = [
+"""params = [
     (20, 0.4, "fade"),
     (10, 0.7, "fade"),
     (5, 1.2, "fade")
 ]
-world = Perlin.fractalStackedPerlin(wolrdWidth, worldHeight, params, 1)
+world = Perlin.fractalStackedPerlin(worldWidth, worldHeight, params, 1)"""
+
+"""#stacking 2 perlin noises
+world1 = Perlin.perlin(worldWidth, worldHeight, 20, 0.5, "fade")
+world2 = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
+noises = [world1, world2]
+world = Perlin.stackPerlinNoises(noises)"""
 
 threshold = 0
 
