@@ -49,8 +49,8 @@ world = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
 ]
 world = Perlin.fractalStackedPerlin(worldWidth, worldHeight, params, 1)"""
 
-"""#stacking 2 perlin noises
-world1 = Perlin.perlin(worldWidth, worldHeight, 20, 0.5, "fade")
+#stacking 2 perlin noises
+"""world1 = Perlin.perlin(worldWidth, worldHeight, 20, 0.5, "fade")
 world2 = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
 noises = [world1, world2]
 world = Perlin.stackPerlinNoises(noises)"""
