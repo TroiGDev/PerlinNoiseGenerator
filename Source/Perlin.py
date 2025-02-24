@@ -154,9 +154,6 @@ def fractalStackedPerlin(cWidth, cHeight, params, amplitude):
         for y in range(cHeight):
             for noise in noises:
                 cGrid[x][y] += noise[x][y]       #for every pixel, for every noise, add noise to child grid
-            
-            #divide for correct avarage
-            cGrid[x][y] = cGrid[x][y] / len(noises)
 
     #normalize grid and multiply by final amplitude
     min = 0
@@ -184,7 +181,7 @@ def fractalStackedPerlin(cWidth, cHeight, params, amplitude):
     #return final grid
     return cGrid
 
-def stackPerlinNoises(noises):
+def stackPerlinNoises(noises, amplitude):
     #create 2d child grid
     cWidth = len(noises[0])
     cHeight = len(noises[0][0])
@@ -201,8 +198,28 @@ def stackPerlinNoises(noises):
                     return noises[0]
                 
                 cGrid[x][y] += noise[x][y]       #for every pixel, for every noise, add noise to child grid
-            
-            #divide for correct avarage
-            cGrid[x][y] = cGrid[x][y] / len(noises)
+
+    #normalize grid and multiply by final amplitude
+    min = 0
+    max = 0
+    for x in range(cWidth):
+        for y in range(cHeight):
+            if cGrid[x][y] > max:
+                max = cGrid[x][y]
+            if cGrid[x][y] < min:
+                min = cGrid[x][y]
+
+    #add min*-1 to all cells to get positive
+    for x in range(cWidth):
+        for y in range(cHeight):
+            cGrid[x][y] += min * -1
+    
+    #update max value to get range ratio comparison
+    max += min * -1
+
+    #go trhough grid again and normalize, then multiply by amplitude
+    for x in range(cWidth):
+        for y in range(cHeight):
+            cGrid[x][y] = (cGrid[x][y] / max) * amplitude
     
     return cGrid
