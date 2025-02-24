@@ -1,9 +1,9 @@
 import pygame
 import Perlin
 
-worldWidth = 100
-worldHeight = 100
-drawnCellSize = 5
+worldWidth = 500
+worldHeight = 500
+drawnCellSize = 1
 
 pygame.init()
 screenWidth = worldWidth * drawnCellSize
@@ -43,9 +43,9 @@ world = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
 
 #generate fractal perlin grid
 """params = [
-    (20, 0.4, "fade"),
-    (10, 0.7, "fade"),
-    (5, 1.2, "fade")
+    (40, 0.2, "fade"),
+    (20, 0.5, "fade"),
+    (10, 1, "fade")
 ]
 world = Perlin.fractalStackedPerlin(worldWidth, worldHeight, params, 1)"""
 
@@ -53,7 +53,7 @@ world = Perlin.fractalStackedPerlin(worldWidth, worldHeight, params, 1)"""
 """world1 = Perlin.perlin(worldWidth, worldHeight, 20, 0.5, "fade")
 world2 = Perlin.perlin(worldWidth, worldHeight, 10, 1, "fade")
 noises = [world1, world2]
-world = Perlin.stackPerlinNoises(noises)"""
+world = Perlin.stackPerlinNoises(noises, 1)"""
 
 threshold = 0
 
